@@ -122,6 +122,9 @@ namespace Laobai.Core.Lucene
                 doc.Add(field);
             }
             #endregion
+            doc.Add(this.indexUtils.UnAnalyzedField("departments", item.departments));
+            doc.Add(this.indexUtils.UnAnalyzedField("symptom", item.symptom));
+
             doc.Add(this.indexUtils.UnAnalyzedField("product_type_id", item.product_type_id));
             doc.Add(this.indexUtils.UnAnalyzedField("product_type_path", item.product_type_path));
 

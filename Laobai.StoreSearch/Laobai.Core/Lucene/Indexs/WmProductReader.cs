@@ -140,18 +140,18 @@ namespace Laobai.Core.Lucene
 
         #region FormatMustQuerys
         private List<Query> FormatMustQuerys(ESearchMode searchMode
-            , string keys
-            , string type_path
-            , string brand
-            , int startPrice
-            , int endPrice
-            , int ison, int isDrug, int is_cross
-            , int allowYBLife
-            , int is_free_fare
-            , int is_promotion
-            , int is_new
-            , int shop_id
-            , int shop_type
+            , string keys,string departKey,string  symptomKey
+            //, string type_path
+            //, string brand
+            //, int startPrice
+            //, int endPrice
+            //, int ison, int isDrug, int is_cross
+            //, int allowYBLife
+            //, int is_free_fare
+            //, int is_promotion
+            //, int is_new
+            //, int shop_id
+            //, int shop_type
             )
         {
             List<Query> list = new List<Query>();
@@ -185,98 +185,108 @@ namespace Laobai.Core.Lucene
                 }
                 list.Add(query);
             }
-            if (!string.IsNullOrEmpty(type_path))
+            if (!string.IsNullOrEmpty(departKey))
             {
-                #region 分类
-                Term term = new Term("product_type_path", type_path + "*");
-                Query query = new WildcardQuery(term);
-                list.Add(query);
-                #endregion
-            }
-            if (!string.IsNullOrEmpty(brand))
-            {
-                Query query = this.indexUtils.CreateTermQuery("product_brand", brand);//搜索
+                Query query = this.indexUtils.CreateTermQuery("departments", departKey);//搜索
                 list.Add(query);
             }
-            if (startPrice > 0 || endPrice > 0)
+            if (!string.IsNullOrEmpty(symptomKey))
             {
-                #region 价格
-                int val = startPrice;
-                if (endPrice < startPrice && endPrice>0)
-                {
-                    startPrice = endPrice;
-                    endPrice = val;
-                }
-                if (startPrice != endPrice)
-                {
-                    if (startPrice <= 0)
-                        startPrice = int.MinValue;
-                    if (endPrice <= 0)
-                        endPrice = int.MaxValue;
-                    Query query = NumericRangeQuery.NewFloatRange("sale_price", startPrice, endPrice
-                        , true
-                        , true);//价格范围
-                    list.Add(query);
-                }
-                #endregion
-            }
-            if (ison >= 0)
-            {
-                Query query = this.indexUtils.CreateTermQuery("is_on_sale", ison);//是否上架
+                Query query = this.indexUtils.CreateTermQuery("symptom", symptomKey);//搜索
                 list.Add(query);
             }
-            if (isDrug >= 0)
-            {
-                Query query = this.indexUtils.CreateTermQuery("is_drug", isDrug.ToString());//是否处方药
-                list.Add(query);
-            }
-            if (is_cross >= 0)
-            {
-                Query query = this.indexUtils.CreateTermQuery("is_cross", is_cross.ToString());//是否跨境商品
-                list.Add(query);
-            }
-            if (allowYBLife >= 0)
-            {
-                Query query = this.indexUtils.CreateTermQuery("allow_ebaolife", allowYBLife.ToString());//是否支持医卡通付款
-                list.Add(query);
-            }
-            if (is_free_fare >= 0)
-            {
-                Query query = this.indexUtils.CreateTermQuery("is_free_fare", is_free_fare.ToString());//是否包邮
-                list.Add(query);
-            }
-            if (is_promotion >= 0)
-            {
-                Query query = this.indexUtils.CreateTermQuery("is_promotion", is_promotion.ToString());//是否促销
-                list.Add(query);
-            }
-            if (is_new >= 0)
-            {
-                #region 是否新品
-                long val = Utils.ConvertDateTimeLong(DateTime.Now.AddDays(-30));
-                long max = Utils.ConvertDateTimeLong(DateTime.Now);
-                if (is_new > 0)
-                {
-                    Query query = NumericRangeQuery.NewLongRange("first_up_time", val, max, true, false);//时间
-                    list.Add(query);
-                }
-                else
-                {
-                    Query query = NumericRangeQuery.NewLongRange("first_up_time", 0, val, false, true);//时间
-                    list.Add(query);
-                }
-                #endregion
-            }
-            if (shop_id > 0)
-            {
-                Query query = this.indexUtils.CreateTermQuery("shop_id", shop_id.ToString());//商家ID
-                list.Add(query);
-            }
-            if (shop_type >= 0)
-            {
-                Query query = this.indexUtils.CreateTermQuery("shop_type", shop_type);//商家类别
-                list.Add(query);
-            }
+            //if (!string.IsNullOrEmpty(type_path))
+            //{
+            //    #region 分类
+            //    Term term = new Term("product_type_path", type_path + "*");
+            //    Query query = new WildcardQuery(term);
+            //    list.Add(query);
+            //    #endregion
+            //}
+            //if (!string.IsNullOrEmpty(brand))
+            //{
+            //    Query query = this.indexUtils.CreateTermQuery("product_brand", brand);//搜索
+            //    list.Add(query);
+            //}
+            //if (startPrice > 0 || endPrice > 0)
+            //{
+            //    #region 价格
+            //    int val = startPrice;
+            //    if (endPrice < startPrice && endPrice>0)
+            //    {
+            //        startPrice = endPrice;
+            //        endPrice = val;
+            //    }
+            //    if (startPrice != endPrice)
+            //    {
+            //        if (startPrice <= 0)
+            //            startPrice = int.MinValue;
+            //        if (endPrice <= 0)
+            //            endPrice = int.MaxValue;
+            //        Query query = NumericRangeQuery.NewFloatRange("sale_price", startPrice, endPrice
+            //            , true
+            //            , true);//价格范围
+            //        list.Add(query);
+            //    }
+            //    #endregion
+            //}
+            //if (ison >= 0)
+            //{
+            //    Query query = this.indexUtils.CreateTermQuery("is_on_sale", ison);//是否上架
+            //    list.Add(query);
+            //}
+            //if (isDrug >= 0)
+            //{
+            //    Query query = this.indexUtils.CreateTermQuery("is_drug", isDrug.ToString());//是否处方药
+            //    list.Add(query);
+            //}
+            //if (is_cross >= 0)
+            //{
+            //    Query query = this.indexUtils.CreateTermQuery("is_cross", is_cross.ToString());//是否跨境商品
+            //    list.Add(query);
+            //}
+            //if (allowYBLife >= 0)
+            //{
+            //    Query query = this.indexUtils.CreateTermQuery("allow_ebaolife", allowYBLife.ToString());//是否支持医卡通付款
+            //    list.Add(query);
+            //}
+            //if (is_free_fare >= 0)
+            //{
+            //    Query query = this.indexUtils.CreateTermQuery("is_free_fare", is_free_fare.ToString());//是否包邮
+            //    list.Add(query);
+            //}
+            //if (is_promotion >= 0)
+            //{
+            //    Query query = this.indexUtils.CreateTermQuery("is_promotion", is_promotion.ToString());//是否促销
+            //    list.Add(query);
+            //}
+            //if (is_new >= 0)
+            //{
+            //    #region 是否新品
+            //    long val = Utils.ConvertDateTimeLong(DateTime.Now.AddDays(-30));
+            //    long max = Utils.ConvertDateTimeLong(DateTime.Now);
+            //    if (is_new > 0)
+            //    {
+            //        Query query = NumericRangeQuery.NewLongRange("first_up_time", val, max, true, false);//时间
+            //        list.Add(query);
+            //    }
+            //    else
+            //    {
+            //        Query query = NumericRangeQuery.NewLongRange("first_up_time", 0, val, false, true);//时间
+            //        list.Add(query);
+            //    }
+            //    #endregion
+            //}
+            //if (shop_id > 0)
+            //{
+            //    Query query = this.indexUtils.CreateTermQuery("shop_id", shop_id.ToString());//商家ID
+            //    list.Add(query);
+            //}
+            //if (shop_type >= 0)
+            //{
+            //    Query query = this.indexUtils.CreateTermQuery("shop_type", shop_type);//商家类别
+            //    list.Add(query);
+            //}
             return list;
         }
         #endregion
@@ -646,27 +656,29 @@ namespace Laobai.Core.Lucene
         /// <returns></returns>
         public List<ProductIndexWmInfo> ChangePage(int pagesize, int pageindex
             , string keyword
-            , int product_type_id
-            , string brand
-            , int startPrice
-            , int endPrice
-            , int ison, int isDrug, int is_cross
-            , int allowYBLife
-            , int is_free_fare
-            , int is_promotion
-            , int is_new
-            , int is_norms
-            , int shop_id
-            , int shop_type
+            ,string departKey
+            ,string symptomKey
+            //, int product_type_id
+            //, string brand
+            //, int startPrice
+            //, int endPrice
+            //, int ison, int isDrug, int is_cross
+            //, int allowYBLife
+            //, int is_free_fare
+            //, int is_promotion
+            //, int is_new
+            //, int is_norms
+            //, int shop_id
+            //, int shop_type
             , string ocol, EOrderType ot
             , ref int totalCount
             , ref int dataCount, ref int pageCount)
         {
-            if (indexUtils.IsBadWords(keyword))
-                return new List<ProductIndexWmInfo>();//全符号的搜索
+            //if (indexUtils.IsBadWords(keyword))
+           //     return new List<ProductIndexWmInfo>();//全符号的搜索
 
-            List<ProductTypeInfo> typeList = ProductTypeDB.GetList(shop_type == 1 ? 1 : -1);//获取所有分类
-            string path = "";
+            //List<ProductTypeInfo> typeList = ProductTypeDB.GetList(shop_type == 1 ? 1 : -1);//获取所有分类
+            //string path = "";
             //if (product_type_id > 0)
             //{
             //    path = ProductTypeDB.GetInfo(typeList, product_type_id).product_type_path;//分类路径
@@ -685,30 +697,31 @@ namespace Laobai.Core.Lucene
                     this._analyzerResult = keys.Split(' ').ToList<string>();
                 }
                 this._isSearchByKey = true;
-                if (string.IsNullOrEmpty(keys.Trim()))
-                    return new List<ProductIndexWmInfo>();//空搜索
+               // if (string.IsNullOrEmpty(keys.Trim()))
+               //     return new List<ProductIndexWmInfo>();//空搜索
             }
             List<Query> mustQuerys = new List<Query>();
             int maxTotal = this.maxRecords;//需要取多少条记录
-            mustQuerys = this.FormatMustQuerys(searchMode, keys
-                            , path
-                            , brand
-                            , startPrice
-                            , endPrice
-                            , ison
-                            , isDrug
-                            , is_cross
-                            , allowYBLife
-                            , is_free_fare
-                            , is_promotion
-                            , is_new
-                            , shop_id
-                            , -1);
-            if (is_norms >= 0 && !searchMode.Equals(ESearchMode.NORMS))
-            {
-                //从合规商品中搜索
-                mustQuerys.Add(this.indexUtils.CreateTermQuery("norms", is_norms.ToString()));
-            }
+            mustQuerys = this.FormatMustQuerys(searchMode, keys, departKey, symptomKey
+                            //, path
+                            //, brand
+                            //, startPrice
+                            //, endPrice
+                            //, ison
+                            //, isDrug
+                            //, is_cross
+                            //, allowYBLife
+                            //, is_free_fare
+                            //, is_promotion
+                            //, is_new
+                            //, shop_id
+                            //, -1
+                            );
+            //if (is_norms >= 0 && !searchMode.Equals(ESearchMode.NORMS))
+            //{
+            //    //从合规商品中搜索
+            //    mustQuerys.Add(this.indexUtils.CreateTermQuery("norms", is_norms.ToString()));
+            //}
             List<Query> shouldQuerys = null;
             if (searchMode.Equals(ESearchMode.KEY) && !string.IsNullOrEmpty(keys))
             {

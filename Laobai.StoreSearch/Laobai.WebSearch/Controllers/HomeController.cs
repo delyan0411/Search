@@ -53,9 +53,7 @@ namespace Laobai.WebSearch.Controllers
             #endregion
             Logger.Log(json);
             var val = this.Query(json);
-            Logger.Log(JsonHelper.ObjectToJson(val));
             Logger.Log(">>>总的执行时间>>>" + (DateTime.Now - time1).Milliseconds.ToString() + "毫秒");
-
             return val;
         }
         #endregion
@@ -95,7 +93,6 @@ namespace Laobai.WebSearch.Controllers
                 case "getsuggest"://搜索提示
                     {
                         returnJson = Json(this.QuerySuggest(bodyJson), JsonRequestBehavior.AllowGet);
-                        //Logger.Log(JsonHelper.ObjectToJson(returnJson));
                         break;
                     }
                 case "guessyoulike"://猜您喜欢
@@ -105,7 +102,7 @@ namespace Laobai.WebSearch.Controllers
                     }
                 case "searchsameproduct"://同品牌或同分类
                     {
-                        returnJson = Json(this.QueryProductAll(bodyJson, shop_type), JsonRequestBehavior.AllowGet);
+                        returnJson = Json(this.QueryProductSame(bodyJson, shop_type), JsonRequestBehavior.AllowGet);
                         break;
                     }
                 case "searchwmproduct"://微脉商品查询
@@ -234,26 +231,30 @@ namespace Laobai.WebSearch.Controllers
             int pagesize = sBody.page_size < 1 ? 1 : sBody.page_size;
             int pageindex = sBody.page_no < 1 ? 1 : sBody.page_no;
             string sKey = sBody.search_word;
+            string departKey = sBody.departmentsname;
+            string symptomKey = sBody.symptomname;
             if (string.IsNullOrEmpty(sKey))
                 sKey = "";
             if (sKey.Length > 200)
                 sKey = sKey.Substring(0, 200);//关键词长度最长200个字
             List<ProductIndexWmInfo> list = reader.ChangePage(pagesize, pageindex//读取数据
                 , sKey
-                , -1
-                , ""
-                , -1
-                , -1
-                , 1
-                , -1
-                , -1
-                , -1
-                , -1
-                , -1
-                , -1
-                , -1
-                , -1
-                , shop_type
+                , departKey
+                , symptomKey
+                //, -1
+                //, ""
+                //, -1
+                //, -1
+                //, 1
+                //, -1
+                //, -1
+                //, -1
+                //, -1
+                //, -1
+                //, -1
+                //, -1
+                //, -1
+                //, shop_type
                 , "default"
                 , ot
                 , ref totalCount
@@ -579,17 +580,17 @@ namespace Laobai.WebSearch.Controllers
                 sBody.page_size += removeList.Count;
                 if (string.IsNullOrEmpty(sBody.search_word))
                     sBody.search_word = "@all";
-
                 ProductReader reader = new ProductReader();
+                sBody.product_type_id = "-1";
                 List<ProductIndexInfo> list = this.GetData(sBody, shop_type
                     , reader
                     , ot
                     , ref totalCount
                     , ref dataCount, ref pageCount);
                 list.RemoveAll(delegate(ProductIndexInfo item)
-                            {
-                                return removeList.Contains(item.product_id.ToString());
-                            });
+                {
+                    return removeList.Contains(item.product_id.ToString());
+                });
                 if (list.Count > pagesize && pagesize > 0)
                 {
                     list = list.GetRange(0, pagesize);
@@ -608,9 +609,49 @@ namespace Laobai.WebSearch.Controllers
         #endregion
 
         #region QueryProductAll 同品牌或同分类商品
-        private Response<SearchResponseProductBody> QueryProductAll(string json, int shop_type = 1)
+        private Response<SearchResponseProductBody> QueryProductSame(string json, int shop_type = 1, string jsonKey = "SearchSameProduct")
         {
-            return this.QueryGuessYouLike(json, shop_type, "SearchSameProduct");
+            try
+            {
+                SearchRequestProductBody sBody = JsonHelper.JsonToObject<SearchRequestProductBody>(json);
+                int totalCount = 0;//搜索命中的数量
+                int dataCount = 0;//搜索返回的记录数
+                int pageCount = 0;
+                EOrderType ot = EOrderType.DESC;
+                if (!string.IsNullOrEmpty(sBody.sort_type))
+                {
+                    ot = sBody.sort_type.Trim().ToLower() == "asc" ? EOrderType.ASC : EOrderType.DESC;
+                }
+                List<string> removeList = sBody.remove_products;
+                if (removeList == null) removeList = new List<string>();
+                int pagesize = sBody.page_size;
+                sBody.page_size += removeList.Count;
+                if (string.IsNullOrEmpty(sBody.search_word))
+                    sBody.search_word = "@all";
+                ProductReader reader = new ProductReader();
+                List<ProductIndexInfo> list = this.GetData(sBody, shop_type
+                    , reader
+                    , ot
+                    , ref totalCount
+                    , ref dataCount, ref pageCount);
+                list.RemoveAll(delegate (ProductIndexInfo item)
+                {
+                    return removeList.Contains(item.product_id.ToString());
+                });
+                if (list.Count > pagesize && pagesize > 0)
+                {
+                    list = list.GetRange(0, pagesize);
+                }
+                var response = this.BindData(list, reader, jsonKey, totalCount, dataCount);
+                response.body.brand_list = new List<ResponseBrand>();//清空品牌
+                response.body.type_list = new List<ProductTypeInfo>();//清空分类
+                return response;
+            }
+            catch (Exception e)
+            {
+                this.WriteLog(e, jsonKey, json);
+                return this.JsonError(jsonKey, 0x00002);
+            }
         }
         #endregion
 
