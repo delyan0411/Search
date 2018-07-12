@@ -92,7 +92,7 @@ namespace Laobai.Core.Lucene
         {
             ESearchMode searchMode = ESearchMode.KEY;//搜索模式
             string sKey = keyword.Trim().ToLower();
-            if (sKey.Length>2 && sKey.StartsWith("n:"))
+            if (sKey.Length > 2 && sKey.StartsWith("n:"))
             {
                 searchMode = ESearchMode.CODE;//按商品编码搜索
             }
@@ -162,6 +162,8 @@ namespace Laobai.Core.Lucene
             , int allowYBLife
             , int is_free_fare
             , int is_promotion
+            , int allowQJ
+            , int allowKLF
             , int is_new
             , int shop_id
             , int shop_type
@@ -215,7 +217,7 @@ namespace Laobai.Core.Lucene
             {
                 #region 价格
                 int val = startPrice;
-                if (endPrice < startPrice && endPrice>0)
+                if (endPrice < startPrice && endPrice > 0)
                 {
                     startPrice = endPrice;
                     endPrice = val;
@@ -251,6 +253,16 @@ namespace Laobai.Core.Lucene
             if (allowYBLife >= 0)
             {
                 Query query = this.indexUtils.CreateTermQuery("allow_ebaolife", allowYBLife.ToString());//是否支持医卡通付款
+                list.Add(query);
+            }
+            if (allowQJ >= 0)
+            {
+                Query query = this.indexUtils.CreateTermQuery("allow_qj", allowQJ.ToString());//是否支持企健付款
+                list.Add(query);
+            }
+            if (allowKLF >= 0)
+            {
+                Query query = this.indexUtils.CreateTermQuery("allow_klf", allowKLF.ToString());//是否支持可乐否付款
                 list.Add(query);
             }
             if (is_free_fare >= 0)
@@ -671,6 +683,8 @@ namespace Laobai.Core.Lucene
             , int is_norms
             , int shop_id
             , int shop_type
+            ,int allowQJ
+             , int allowKLF
             , string ocol, EOrderType ot
             , ref int totalCount
             , ref int dataCount, ref int pageCount)
@@ -714,7 +728,9 @@ namespace Laobai.Core.Lucene
                             , allowYBLife
                             , is_free_fare
                             , is_promotion
-                            , is_new
+                            , allowQJ == 1 ? 1 : -1
+                            , allowKLF == 3 ? 1 : -1
+                             , is_new
                             , shop_id
                             ,-1);
             //, shop_type

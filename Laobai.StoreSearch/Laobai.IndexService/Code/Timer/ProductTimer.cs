@@ -20,7 +20,7 @@ namespace Laobai.IndexService
 
         public ProductTimer()
         {
-            System.Timers.Timer t = new System.Timers.Timer(1000 * 20);//间隔为20秒刷新一次(60000毫秒)
+            System.Timers.Timer t = new System.Timers.Timer(1000 * 45);//间隔为45秒刷新一次
             t.Elapsed += new System.Timers.ElapsedEventHandler(Start);//到达时间的时候执行事件；
             t.AutoReset = true;//设置是执行一次（false）还是一直执行(true)
             //t.AutoReset = false;//设置是执行一次（false）还是一直执行(true)
@@ -62,7 +62,7 @@ namespace Laobai.IndexService
             if (isStart && this.queueCount > 0 && this.processedCount < this.queueCount)
             {
                 this.processedCount++;//页码增加
-                Logger.Log("生成第" + this.processedCount + "页...");
+                Logger.Log("生成商品索引第" + this.processedCount + "页...");
                 this.createIndex(this.processedCount);
             }
         }
@@ -95,6 +95,7 @@ namespace Laobai.IndexService
                         , sDate, eDate
                         , ref count, ref pages);//更新
                 }
+                
                 new ProductWriter().CreateIndex(list);
                 if (idx == 1)
                 {

@@ -25,5 +25,12 @@ namespace Laobai.IndexService
         {
             get { return 30; }
         }
+        /// <summary>
+        /// 更新商品索引的间隔时间(单位分钟)
+        /// </summary>
+        public static int WmIntervalMinute
+        {
+            get { return 120; }
+        }
     }
 }

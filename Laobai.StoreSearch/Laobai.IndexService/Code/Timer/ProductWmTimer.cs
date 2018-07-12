@@ -20,7 +20,7 @@ namespace Laobai.IndexService
 
         public ProductWmTimer()
         {
-            System.Timers.Timer t = new System.Timers.Timer(1000 * 30);//间隔为20秒刷新一次(60000毫秒)
+            System.Timers.Timer t = new System.Timers.Timer(1000 * 60);//间隔为20秒刷新一次(60000毫秒)
             t.Elapsed += new System.Timers.ElapsedEventHandler(Start);//到达时间的时候执行事件；
             //t.AutoReset = false;//设置是执行一次（false）还是一直执行(true)
             t.AutoReset = true;//设置是执行一次（false）还是一直执行(true)
@@ -33,7 +33,7 @@ namespace Laobai.IndexService
         {
             get
             {
-                return (reader.LastModifyTime.AddMinutes(ServiceConfig.IntervalMinute) < DateTime.Now);
+                return (reader.LastModifyTime.AddMinutes(ServiceConfig.WmIntervalMinute) < DateTime.Now);
             }
         }
         private bool isCreate = false;//是否创建
@@ -62,7 +62,7 @@ namespace Laobai.IndexService
             if (isStart && this.queueCount > 0 && this.processedCount < this.queueCount)
             {
                 this.processedCount++;//页码增加
-                Logger.Log("生成第" + this.processedCount + "页...");
+                Logger.Log("生成微脉商品第" + this.processedCount + "页...");
                 this.createIndex(this.processedCount);
             }
         }

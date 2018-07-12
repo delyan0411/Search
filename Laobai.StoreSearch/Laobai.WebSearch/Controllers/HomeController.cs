@@ -51,9 +51,9 @@ namespace Laobai.WebSearch.Controllers
                 return Json(this.JsonError("Query", 0x00002, "JSON解析错误"), JsonRequestBehavior.AllowGet);
             }
             #endregion
-            Logger.Log(json);
+            //Logger.Log(json);
             var val = this.Query(json);
-            Logger.Log(">>>总的执行时间>>>" + (DateTime.Now - time1).Milliseconds.ToString() + "毫秒");
+            //Logger.Log(">>>总的执行时间>>>" + (DateTime.Now - time1).Milliseconds.ToString() + "毫秒");
             return val;
         }
         #endregion
@@ -107,6 +107,7 @@ namespace Laobai.WebSearch.Controllers
                     }
                 case "searchwmproduct"://微脉商品查询
                     {
+                        //Logger.Log(json);
                         returnJson = Json(this.QueryWmProduct(bodyJson, headerJson,shop_type, json), JsonRequestBehavior.AllowGet);
                         break;
                     }
@@ -206,6 +207,8 @@ namespace Laobai.WebSearch.Controllers
                 , Utils.StrToInt(sBody.is_norms, -1)
                 , Utils.StrToInt(sBody.shop_id, -1)
                 , shop_type
+                , Utils.StrToInt(sBody.allow_qj, -1)
+                 , Utils.StrToInt(sBody.allow_qj, -1)
                 , sBody.sort_column
                 , ot
                 , ref totalCount
@@ -549,7 +552,7 @@ namespace Laobai.WebSearch.Controllers
                     , ref dataCount, ref pageCount);
 
                 var request = this.BindWmData(list, reader, jsonKey, totalCount, dataCount);
-
+                //Logger.Log(JsonHelper.ObjectToJson(request));
                 return request;
             }
             catch (Exception e)

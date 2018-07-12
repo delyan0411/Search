@@ -19,7 +19,7 @@ namespace Laobai.IndexService
 
         public WordsTimer()
         {
-            System.Timers.Timer t = new System.Timers.Timer(1000 * 30);//间隔为30秒刷新一次(60000毫秒)
+            System.Timers.Timer t = new System.Timers.Timer(1000 *60);//间隔为30秒刷新一次(60000毫秒)
             t.Elapsed += new System.Timers.ElapsedEventHandler(Start);//到达时间的时候执行事件；
             // t.AutoReset = false;//设置是执行一次（false）还是一直执行(true)
             t.AutoReset = true;//设置是执行一次（false）还是一直执行(true)
@@ -35,8 +35,8 @@ namespace Laobai.IndexService
                 DateTime now = DateTime.Now;//每天凌晨3点至3点半
                 DateTime date = DateTime.Parse(now.ToString("yyyy-MM-dd") + " 03:00:00");
                 //string dateString = date.ToString("yyyy-MM-dd");
-                // return (now >= date && now <= date.AddMinutes(30));
-                return true;
+                 return (now >= date && now <= date.AddMinutes(30));
+                //return true;
             }
         }
 

@@ -376,9 +376,9 @@ namespace Laobai.Core.Lucene
                 }
                 this.writer.Optimize();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Logger.Error(ex.Message);
             }
             finally
             {

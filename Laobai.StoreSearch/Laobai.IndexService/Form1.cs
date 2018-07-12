@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Laobai.IndexService
@@ -21,10 +22,19 @@ namespace Laobai.IndexService
         {
             //new WordsTimer();
             //new ProductTimer();
-            new ProductWmTimer();
+            //new ProductWmTimer();
             //int count = 0;
             //int pages = 0;
             //ProductDB.GetList(800, 7, ref count, ref pages);
+            Thread t2 = new Thread(new ThreadStart(this.RunProductThread));
+            t2.IsBackground = true;
+            t2.Start();
         }
+        #region RunProductThread 商品索引
+        private void RunProductThread()
+        {
+            new Laobai.IndexService.ProductTimer();
+        }
+        #endregion
     }
 }

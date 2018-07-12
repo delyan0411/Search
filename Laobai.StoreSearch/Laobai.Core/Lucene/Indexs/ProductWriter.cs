@@ -127,7 +127,8 @@ namespace Laobai.Core.Lucene
             doc.Add(this.indexUtils.BooleanField("is_on_sale", item.is_on_sale));
             doc.Add(this.indexUtils.BooleanField("is_drug", item.is_drug));
             doc.Add(this.indexUtils.BooleanField("allow_ebaolife", item.allow_ebaolife));
-
+            doc.Add(this.indexUtils.BooleanField("allow_qj", (item.allow_qj.IndexOf("1") == 0) ? "1" : "0"));
+            doc.Add(this.indexUtils.BooleanField("allow_klf", (item.allow_qj.IndexOf("3") >= 0) ? "1" : "0"));
             //doc.Add(this.indexUtils.BooleanField("is_cross", item.is_cross_border));
             doc.Add(this.indexUtils.BooleanField("is_free_fare", item.is_free_fare));
             doc.Add(this.indexUtils.BooleanField("is_promotion", item.is_promotion));
@@ -334,11 +335,12 @@ namespace Laobai.Core.Lucene
             List<string> idList = new List<string>();//需要删除的索引内容
             foreach (ProductInfo p in list)
             {
+               
                 if (p.product_id > 0 && !idList.Contains(p.product_id.ToString()))
                     idList.Add(p.product_id.ToString());
                 if (Utils.StrToInt(p.is_visible) == 1 && !this.IsFilter(p))
                     newList.Add(p);           
-            }
+            }            
             this.indexUtils.RemoveDocuments("product_id", idList);
             return newList;
         }

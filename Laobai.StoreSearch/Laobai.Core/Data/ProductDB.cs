@@ -24,9 +24,9 @@ namespace Laobai.Core.Data
         public static List<ProductInfo> GetList(int size, int pageIndex, ref int dataCount, ref int pageCount)
         {
             RequestProductBody body = new RequestProductBody() { page_size = size.ToString(), page_no = pageIndex.ToString() };
-
+            //Logger.Log(JsonHelper.ObjectToJson(body));
             var response = DBHelper<ResponseProduct>.GetResponse("GetValidProduct", JsonHelper.ObjectToJson(body));
-
+            //Logger.Log(JsonHelper.ObjectToJson(response));
             if (DBHelper<ResponseProduct>.IsOK(response) && response.body!=null)
             {
                 var responseBody = response.body;
@@ -67,9 +67,9 @@ namespace Laobai.Core.Data
                 start_time = startDate.ToString("yyyy-MM-dd") + " 00:00:00",
                 end_time = endDate.ToString("yyyy-MM-dd") + " 23:59:59"
             };
-
+            //Logger.Log(JsonHelper.ObjectToJson(body));
             var response = DBHelper<ResponseProduct>.GetResponse("GetModifyProduct", JsonHelper.ObjectToJson(body));
-
+            //Logger.Log(JsonHelper.ObjectToJson(response));
             if (DBHelper<ResponseProduct>.IsOK(response) && response.body != null)
             {
                 var responseBody = response.body;
